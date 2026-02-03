@@ -20,10 +20,22 @@ from sklearn.metrics import (
 @st.cache_data
 def load_data(classes_path, edgelist_path, features_path):
     """Load the Elliptic dataset"""
-    df_classes = pd.read_csv(classes_path)
-    df_edgelist = pd.read_csv(edgelist_path)
-    df_features = pd.read_csv(features_path, header=None)
-    return df_classes, df_edgelist, df_features
+    # Try to load from local files first, if not available show message
+    try:
+        df_classes = pd.read_csv(classes_path)
+        df_edgelist = pd.read_csv(edgelist_path)
+        df_features = pd.read_csv(features_path, header=None)
+        return df_classes, df_edgelist, df_features
+    except Exception as e:
+        st.error(f"Cannot load local files: {e}")
+        st.info("⚠️ Git LFS files are not supported on Streamlit Cloud free tier.")
+        st.info("To fix this, you need to either:")
+        st.markdown("""
+        1. **Upload data to Google Drive/Dropbox** and modify the code to download from URL
+        2. **Use Streamlit Cloud paid tier** with LFS support
+        3. **Store data in cloud storage** (AWS S3, Google Cloud Storage)
+        """)
+        raise
 
 def main():
     st.title("Logistic Regression for Elliptic Transactions")
