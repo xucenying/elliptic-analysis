@@ -47,6 +47,15 @@ def main():
     # Load data automatically (cached after first load)
     if 'df_merged' not in st.session_state:
         try:
+            # Check if files exist
+            st.info(f"Looking for data files in: {data_folder}")
+            if not os.path.exists(classes_path):
+                st.error(f"File not found: {classes_path}")
+            if not os.path.exists(features_path):
+                st.error(f"File not found: {features_path}")
+            if not os.path.exists(edgelist_path):
+                st.error(f"File not found: {edgelist_path}")
+                
             with st.spinner("Loading data..."):
                 df_classes, df_edgelist, df_features = load_data(
                     classes_path, edgelist_path, features_path
@@ -61,6 +70,8 @@ def main():
                 
         except Exception as e:
             st.error(f"Error loading data: {e}")
+            import traceback
+            st.code(traceback.format_exc())
             st.stop()
     
     # Display data summary
